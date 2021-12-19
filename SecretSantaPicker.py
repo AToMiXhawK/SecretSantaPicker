@@ -96,11 +96,11 @@ def _run(args, logger):
         logger.info("\n\n****************************************************")
 
         person = people[i]
-        santa = people[i-1]
-        logger.info("Secret santa of " + person['name'] + " is " +  santa['name'])
+        santa_of = people[i-1]
+        logger.info(person['name'] + " is Secret Santa of " +  santa_of['name'])
 
         logger.info("Setting up email")
-        send_email(args.email, person, santa, args.send, logger)
+        send_email(args.email, person, santa_of, args.send, logger)
 
         logger.info("****************************************************\n\n")
     
@@ -112,31 +112,31 @@ def get_people(csvfile, logger):
     return people
 
 
-def send_email(from_email, recipient, santa, send, logger):
+def send_email(from_email, recipient, santa_of, send, logger):
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "Your Secret Santa"
     msg['From'] = "Secret Santa Picker <" + from_email + ">"
-    msg['To'] = recipient['email']
+    msg['To'] = recipient['name'] + " <" + recipient['email'] + ">"
 
     # Create the body of the message (a plain-text and an HTML version).
-    text = "Hi " + recipient['name'] + ",\nYour Secret Santa is: " + santa['name'] 
+    text = "Hi " + recipient['name'] + ",\nYou are Secret Santa of: " + santa_of['name'] 
     text += "\n\nWishing you a Merry Christmas and a Happy New Year!!!"
     text += "\nYour Secret Santa Picker"
-    html = \
-    """
-    """
+    #html = \
+    #"""
+    #"""
 
     # Record the MIME types of both parts - text/plain and text/html.
     part1 = MIMEText(text, 'plain')
-    part2 = MIMEText(html, 'html')
+    #part2 = MIMEText(html, 'html')
 
     # Attach parts into message container.
     # According to RFC 2046, the last part of a multipart message, in this case
     # the HTML message, is best and preferred.
     msg.attach(part1)
-    msg.attach(part2)
+    #msg.attach(part2)
 
     logger.info(msg)
 
