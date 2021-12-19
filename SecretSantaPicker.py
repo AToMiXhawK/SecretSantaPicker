@@ -49,6 +49,7 @@ def ssp_main():
     run.set_defaults(func=_run)
 
     parser.add_argument('-v', '--verbose', help="Print Logging Information", action='store_true')
+    parser.add_argument('-V', '--debug', help="Print Logging Information with debug", action='store_true')
     parser.add_argument('-l', '--logfile', help="File to write logs into", default='STDOUT/STDERR' )
 
     args = parser.parse_args()
@@ -59,7 +60,9 @@ def ssp_main():
     # Set up logging
     logger = logging.getLogger('SecretSantaPicker')
 
-    if args.verbose:
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+    elif args.verbose:
         logger.setLevel(logging.INFO)
     else:
         logger.setLevel(logging.ERROR)
@@ -85,11 +88,11 @@ def _run(args, logger):
     logger.info(args)
 
     people = get_people(args.csv, logger)
-    logger.info("Got People: " + str(people))
+    logger.debug("Got People: " + str(people))
 
     logger.info("Shuffling List")
     random.shuffle(people)
-    logger.info("Now People: " + str(people))
+    logger.debug("Now People: " + str(people))
 
     logger.info("Getting Santas!")
     for i in range(len(people)):
@@ -138,7 +141,7 @@ def send_email(from_email, recipient, santa_of, send, logger):
     msg.attach(part1)
     #msg.attach(part2)
 
-    logger.info(msg)
+    logger.debug(msg)
 
     if send:
         try:
